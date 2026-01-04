@@ -48,6 +48,16 @@
   </dependencies>
   <build>
     <finalName>warehouse-management</finalName>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>3.3.2</version>
+            <configuration>
+                <failOnMissingWebXml>false</failOnMissingWebXml>
+            </configuration>
+        </plugin>
+    </plugins>
   </build>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
