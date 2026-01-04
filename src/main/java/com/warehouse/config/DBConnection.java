@@ -2,7 +2,7 @@ package com.warehouse.config;
 import java.sql.*;
 
 public class DBConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/arinest?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"";
+    private static final String URL = "jdbc:mysql://localhost:3306/arinest?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String USER = "warehouse_user";
     private static final String PASSWORD = "jens123";
 
