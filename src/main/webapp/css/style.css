@@ -1,9 +1,11 @@
 
 
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 .dashboard {
     padding: 20px;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .section {
@@ -72,7 +74,8 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #f8fafc;
 }
 
 body::before {
@@ -80,14 +83,14 @@ body::before {
     position: fixed;
     top: 0;
     left: 0;
-    height: auto;
+    height: 100%;
     width: 100%;
-    background-color:#F7EFE2;
+    background-color: #f8fafc;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
-    opacity: 0.3;
+    opacity: 1;
     z-index: -1;
 }
 
@@ -103,7 +106,7 @@ body::before {
 
 /* Table container */
 .table-container {
-    display: ;
+    display: flex;
     justify-content: center;
 }
 
@@ -130,53 +133,56 @@ body::before {
 
 /* Keep header styled */
 .table thead th {
-    background-color: #2E81A7;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
-    font-weight: bold;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    padding: 12px 8px;
 }
 
 
 
 /* Add button */
 .custom-add-btn {
-    background-color: #156082;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
+    border-radius: 10px;
+    padding: 12px 24px;
     font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
 }
 
 .custom-add-btn:hover {
-    background-color: #2E81A7;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
     cursor: pointer;
 }
 
-.tab-btn{
-    background-color: #156082;
-    color: #fff;
-    active-bg: #D9B98E;
+.tab-btn {
+    background-color: #e2e8f0;
+    color: #64748b;
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
 }
 
 .tab-btn.active {
-    background-color: #D9B98E; /* Example: dark gray */
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
-    border-color: #D9B98E;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-
 .tab-btn:hover {
-    background-color: #D9B98E;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    background-color: #cbd5e1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     cursor: pointer;
 }
 

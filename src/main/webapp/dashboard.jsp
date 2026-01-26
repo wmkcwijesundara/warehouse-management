@@ -1,447 +1,454 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*, com.warehouse.config.DBConnection" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.warehouse.dao.ProductDAO" %>
+<%@ page import="com.warehouse.dao.InventoryDAO" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="dashboard" />
-    <jsp:param name="activePage" value="index" />
-    <jsp:param name="content" value="index" />
+    <jsp:param name="title" value="Dashboard Overview" />
+    <jsp:param name="activePage" value="dashboard" />
 </jsp:include>
+
 <%
     Connection conn = DBConnection.getConnection();
-    int productCount = 0, lowStockCount = 0;
+    int productCount = 0, lowStockCount = 0, totalStock = 0, availableStock = 0;
+    double totalSales = 0.0, totalPurchases = 0.0;
+    int salesReturn = 0, purchases = 0;
+    
     try {
+        ProductDAO productDAO = new ProductDAO();
+        InventoryDAO inventoryDAO = new InventoryDAO();
+        
+        // Get product count
         Statement stmt = conn.createStatement();
         ResultSet rs1 = stmt.executeQuery("SELECT COUNT(*) FROM products");
         if (rs1.next()) productCount = rs1.getInt(1);
+        
+        // Get low stock count
+        List lowStockProducts = productDAO.getLowStockProducts();
+        lowStockCount = lowStockProducts.size();
+        
+        // Get total stock
+        ResultSet rs2 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM inventory");
+        if (rs2.next()) totalStock = rs2.getInt(1);
+        
+        // Get available stock (not expired)
+        ResultSet rs3 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM inventory WHERE expiry_date > CURDATE() OR expiry_date IS NULL");
+        if (rs3.next()) availableStock = rs3.getInt(1);
+        
+        // Get total sales (mock data - adjust based on your schema)
+        ResultSet rs4 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM stock_out");
+        if (rs4.next()) {
+            totalSales = rs4.getInt(1) * 10.5; // Mock calculation
+            salesReturn = rs4.getInt(1);
+        }
+        
+        // Get purchases (stock in)
+        ResultSet rs5 = stmt.executeQuery("SELECT COALESCE(COUNT(*), 0) FROM stock_in WHERE status = 'approved'");
+        if (rs5.next()) purchases = rs5.getInt(1);
+        
+        // Total purchases value
+        totalPurchases = purchases * 8.2; // Mock calculation
+        
     } catch (Exception e) {
         e.printStackTrace();
     }
 %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Warehouse Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
-   <style>
-       :root {
-           --primary-color: #3a7bd5;
-           --secondary-color: #00d2ff;
-           --success-color: #28a745;
-           --warning-color: #ffc107;
-           --danger-color: #dc3545;
-           --info-color: #17a2b8;
-       }
+<style>
+    * {
+        font-family: 'Inter', 'Poppins', sans-serif;
+    }
+    
+    .dashboard-container {
+        padding: 0;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        font-size: 24px;
+        color: white;
+    }
+    
+    .stat-icon.blue {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    }
+    
+    .stat-icon.pink {
+        background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+    }
+    
+    .stat-icon.orange {
+        background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    }
+    
+    .stat-icon.purple {
+        background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .sales-overview-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 24px;
+    }
+    
+    .sales-overview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .sales-overview-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .sales-total {
+        font-size: 36px;
+        font-weight: 700;
+        color: #1e293b;
+        font-family: 'Poppins', sans-serif;
+        margin: 16px 0;
+    }
+    
+    .time-selector {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+    
+    .time-btn {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .time-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    
+    .time-btn.active {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border-color: transparent;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-top: 24px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 20px;
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
 
-       body {
-                   position: relative;
-                   min-height: 100vh;
-                   margin: 0;
-                   padding: 0;
-                   font-family: Arial, sans-serif;
-               }
-
-               body::before {
-                   content: "";
-                   position: fixed;
-                   top: 0;
-                   left: 0;
-                   height: 100%;
-                   width: 100%;
-                   background-color:#F7EFE2;
-                   background-size: cover;
-                   background-repeat: no-repeat;
-                   background-position: center;
-                   background-attachment: fixed;
-                   opacity: 0.3; /* Change this value to control transparency */
-                   z-index: -1;
-               }
-
-       .dashboard {
-           padding: 20px;
-       }
-
-       .section {
-           background: transparency;
-           border-radius: 10px;
-           /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);*/
-           padding: 20px;
-           margin-bottom: 25px;
-       }
-
-       .card-stat {
-           border-left: 4px solid;
-           border-radius: 8px;
-           transition: transform 0.3s;
-       }
-
-       .card-stat:hover {
-           transform: translateY(-5px);
-       }
-
-       .card-stat.total { border-left-color: #156082; }
-       .card-stat.available { border-left-color: #156082; }
-       .card-stat.warning { border-left-color: #156082; }
-       .card-stat.danger { border-left-color: #156082; }
-
-       .action-btn {
-           display: flex;
-           flex-direction: column;
-           align-items: center;
-           justify-content: center;
-           padding: 15px;
-           text-align: center;
-           background: white;
-           border-radius: 8px;
-           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-           transition: all 0.3s;
-           color: var(--primary-color);
-           text-decoration: none;
-           height: 100%;
-       }
-
-       .action-btn:hover {
-           background: linear-gradient(135deg, #0b2d3c, #156082, #4a96b3);
-           color: white;
-           transform: translateY(-3px);
-           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-       }
-
-       .action-btn i {
-           font-size: 1.5rem;
-           margin-bottom: 10px;
-       }
-
-       .alert-item {
-           border-left: 4px solid;
-           padding: 10px 15px;
-           margin-bottom: 8px;
-           border-radius: 4px;
-           background-color: rgba(255, 255, 255, 0.8);
-       }
-
-       .alert-item.warning {
-           border-left-color: var(--warning-color);
-           background-color: rgba(255, 193, 7, 0.1);
-       }
-
-       .alert-item.danger {
-           border-left-color: var(--danger-color);
-           background-color: rgba(220, 53, 69, 0.1);
-       }
-
-       .alert-item.info {
-           border-left-color: var(--info-color);
-           background-color: rgba(23, 162, 184, 0.1);
-       }
-
-       .chart-placeholder {
-           background: #f8f9fa;
-           border: 1px dashed #dee2e6;
-           border-radius: 8px;
-           padding: 40px 20px;
-           text-align: center;
-           color: #6c757d;
-           margin-bottom: 15px;
-       }
-
-       .user-summary {
-           background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-           color: white;
-       }
-
-       .user-summary strong {
-           color: white;
-       }
-
-       .list-group-item {
-           border-left: 0;
-           border-right: 0;
-       }
-
-       .list-group-item:first-child {
-           border-top: 0;
-       }
-   </style>
-
-</head>
-<body>
-    <div class="dashboard container-fluid">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0 text-primary"><i class="bi bi-clipboard-data"></i> Araliya</h1>
-
+<div class="dashboard-container">
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="bi bi-tag"></i>
+                </div>
+                <div class="stat-label">Total Sales</div>
+                <div class="stat-value">$<%= String.format("%.2f", totalSales) %></div>
+            </div>
         </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon pink">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div class="stat-label">Total Purchases</div>
+                <div class="stat-value">$<%= String.format("%.2f", totalPurchases) %></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="bi bi-arrow-return-left"></i>
+                </div>
+                <div class="stat-label">Sales Return</div>
+                <div class="stat-value"><%= salesReturn %></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="bi bi-cart"></i>
+                </div>
+                <div class="stat-label">Purchases</div>
+                <div class="stat-value"><%= purchases %></div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Inventory Overview -->
-        <div class="section">
-            <h2 class="h4 mb-4"><i class="bi bi-box-seam"></i> Inventory Overview</h2>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat total h-100">
-                        <div class="card-body">
-                            <h5 class="card-title text-muted">Total Rice Stock</h5>
-                            <h3 class="card-text">12,500 kg</h3>
-                            <p class="text-muted mb-0"><i class="bi bi-arrow-up text-success"></i> 5% from last month</p>
-                        </div>
+    <!-- Sales Overview Section -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="sales-overview-card">
+                <div class="sales-overview-header">
+                    <div>
+                        <h3 class="sales-overview-title">Sales Overview</h3>
+                        <div class="sales-total">$<%= String.format("%.2f", totalSales) %></div>
+                    </div>
+                    <div>
+                        <select class="form-select" style="width: auto; display: inline-block; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <option>Last year (2023)</option>
+                            <option>This year (2024)</option>
+                        </select>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat available h-100">
-                        <div class="card-body">
-                            <h5 class="card-title text-muted">Available Stock</h5>
-                            <h3 class="card-text">10,200 kg</h3>
-                            <p class="text-muted mb-0">81.6% of total</p>
+                
+                <div class="time-selector">
+                    <button class="time-btn active">12 Months</button>
+                    <button class="time-btn">30 days</button>
+                    <button class="time-btn">7 days</button>
+                    <button class="time-btn">24 hours</button>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="sales-overview-card">
+                <h4 class="section-title">Recent Activity</h4>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e2e8f0 !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div style="font-weight: 500; color: #1e293b; font-size: 14px;">Stock In</div>
+                                <div style="font-size: 12px; color: #64748b;">Today, 10:30 AM</div>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">+500</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat warning h-100">
-                        <div class="card-body">
-                            <h5 class="card-title text-muted">Low Stock Items</h5>
-                            <h3 class="card-text">2 types</h3>
-                            <p class="text-muted mb-0">Needs replenishment</p>
+                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e2e8f0 !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div style="font-weight: 500; color: #1e293b; font-size: 14px;">Stock Out</div>
+                                <div style="font-size: 12px; color: #64748b;">Today, 09:15 AM</div>
+                            </div>
+                            <span class="badge bg-success rounded-pill">-250</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat danger h-100">
-                        <div class="card-body">
-                            <h5 class="card-title text-muted">Damaged/Expired</h5>
-                            <h3 class="card-text">150 kg</h3>
-                            <p class="text-muted mb-0">1.2% of total</p>
+                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e2e8f0 !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div style="font-weight: 500; color: #1e293b; font-size: 14px;">New Order</div>
+                                <div style="font-size: 12px; color: #64748b;">Yesterday, 4:20 PM</div>
+                            </div>
+                            <span class="badge bg-info rounded-pill">New</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item border-0 px-0 py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div style="font-weight: 500; color: #1e293b; font-size: 14px;">Product Added</div>
+                                <div style="font-size: 12px; color: #64748b;">Yesterday, 2:10 PM</div>
+                            </div>
+                            <span class="badge bg-warning rounded-pill">+1</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Quick Actions -->
-                <div class="section mb-3">
-                    <h2 class="h4 mb-4"><i class="bi bi-lightning"></i> Quick Actions</h2>
-                    <div class="row g-3">
-                        <div class="col-md-2 col-4">
-                            <a href="StockIn" class="action-btn">
-                                <i class="bi bi-plus-circle"></i>
-                                <span>Add Stock</span>
-                            </a>
-                        </div>
-                        <div class="col-md-2 col-4">
-                            <a href="manageOrders.jsp" class="action-btn">
-                                <i class="bi bi-file-earmark-plus"></i>
-                                <span>Create Order</span>
-                            </a>
-                        </div>
-                        <div class="col-md-2 col-4">
-                            <a href="Inventory" class="action-btn">
-                                <i class="bi bi-search"></i>
-                                <span>View Inventory</span>
-                            </a>
-                        </div>
-                        <div class="col-md-2 col-4">
-                            <a href="manageOrders.jsp" class="action-btn">
-                                <i class="bi bi-cart-check"></i>
-                                <span>View Orders</span>
-                            </a>
-                        </div>
-                        <div class="col-md-2 col-4">
-                            <a href="users.jsp" class="action-btn">
-                                <i class="bi bi-people"></i>
-                                <span>Manage Users</span>
-                            </a>
-                        </div>
-                        <div class="col-md-2 col-4">
-                            <a href="reports.jsp" class="action-btn">
-                                <i class="bi bi-graph-up"></i>
-                                <span>Generate Reports</span>
-                            </a>
-                        </div>
-                    </div>
+    <!-- Inventory Stats -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="bi bi-box-seam"></i>
                 </div>
-
-
-        <div class="row">
-          <!-- Warehouse Activity (50%) -->
-          <div class="col-lg-6 mb-3">
-            <div class="section h-100">
-              <h2 class="h4 mb-4"><i class="bi bi-warehouse"></i> Warehouse Activity</h2>
-              <div class="row">
-                <div class="col-12 mb-3">
-                  <div class="card">
-                    <div class="card-header" style="background-color:#156082; color: white;">
-                      <h3 class="h6 mb-0"><i class="bi bi-box-arrow-in-down"></i> Recent Inbound</h3>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-10 - AgriCo <span class="badge bg-primary rounded-pill">1,000 kg</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-09 - RiceMart <span class="badge bg-primary rounded-pill">750 kg</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-08 - FarmFresh <span class="badge bg-primary rounded-pill">900 kg</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header" style="background-color:#156082; color: white;">
-                      <h3 class="h6 mb-0"><i class="bi bi-box-arrow-up"></i> Recent Outbound</h3>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-11 - CityStore <span class="badge bg-success rounded-pill">500 kg</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-10 - LocalMart <span class="badge bg-success rounded-pill">850 kg</span>
-                      </li>
-                      <li class="list-group-item d-flex justify-content-between align-items-center">
-                        2025-05-09 - QuickBuy <span class="badge bg-success rounded-pill">700 kg</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Orders Summary (50%) -->
-          <div class="col-lg-6 mb-3">
-            <div class="section h-100">
-              <h2 class="h4 mb-4"><i class="bi bi-receipt"></i> Orders Summary</h2>
-              <div class="row">
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="card bg-light h-100">
-                    <div class="card-body text-center">
-                      <h5 class="text-muted">Total (May)</h5>
-                      <h2 class="text-primary">35</h2>
-                      <div class="progress mt-2" style="height: 5px;">
-                        <div class="progress-bar bg-primary" style="width: 100%"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="card bg-light h-100">
-                    <div class="card-body text-center">
-                      <h5 class="text-muted">Pending</h5>
-                      <h2 class="text-warning">5</h2>
-                      <div class="progress mt-2" style="height: 5px;">
-                        <div class="progress-bar bg-warning" style="width: 14%"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="card bg-light h-100">
-                    <div class="card-body text-center">
-                      <h5 class="text-muted">Done</h5>
-                      <h2 class="text-success">28</h2>
-                      <div class="progress mt-2" style="height: 5px;">
-                        <div class="progress-bar bg-success" style="width: 80%"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="card bg-light h-100">
-                    <div class="card-body text-center">
-                      <h5 class="text-muted">Cancelled</h5>
-                      <h2 class="text-danger">2</h2>
-                      <div class="progress mt-2" style="height: 5px;">
-                        <div class="progress-bar bg-danger" style="width: 6%"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-3">
-                <canvas id="ordersChart" height="120"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-
-            <!-- Notifications / Alerts -->
-            <div class="mb-3 w-100">
-                <div class="section h-100">
-                    <h2 class="h4 mb-4"><i class="bi bi-bell"></i> Notifications & Alerts</h2>
-                    <div class="alert-item warning">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
-                            <strong>Warning:</strong> Jasmine Rice below 100 kg.
-                        </div>
-                        <small class="text-muted d-block mt-1">Replenishment needed by May 20</small>
-                    </div>
-                    <div class="alert-item danger">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-octagon-fill me-2 text-danger"></i>
-                            <strong>Alert:</strong> 50 kg of Basmati expired.
-                        </div>
-                        <small class="text-muted d-block mt-1">Mark for disposal</small>
-                    </div>
-                    <div class="alert-item info">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-info-circle-fill me-2 text-info"></i>
-                            <strong>Reminder:</strong> Shipment scheduled for tomorrow.
-                        </div>
-                        <small class="text-muted d-block mt-1">1,200 kg from GlobalRice</small>
-                    </div>
-                    <div class="text-end mt-2">
-                        <a href="#" class="btn btn-sm btn-outline-primary">View All Notifications</a>
-                    </div>
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value"><%= productCount %></div>
+                <div style="margin-top: 12px; font-size: 12px; color: #64748b;">
+                    <i class="bi bi-arrow-up text-success"></i> 5% from last month
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-label">Available Stock</div>
+                <div class="stat-value"><%= availableStock %> kg</div>
+                <div style="margin-top: 12px; font-size: 12px; color: #64748b;">
+                    <%= totalStock > 0 ? String.format("%.1f", (availableStock * 100.0 / totalStock)) : 0 %>% of total
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-label">Low Stock Items</div>
+                <div class="stat-value"><%= lowStockCount %></div>
+                <div style="margin-top: 12px; font-size: 12px; color: #64748b;">
+                    Needs replenishment
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        // Sample chart initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('ordersChart').getContext('2d');
-            const ordersChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Completed', 'Pending', 'Cancelled'],
-                    datasets: [{
-                        label: 'Orders Status',
-                        data: [28, 5, 2],
-                        backgroundColor: [
-                            '#28a745',
-                            '#ffc107',
-                            '#dc3545'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sales Chart
+    const ctx = document.getElementById('salesChart');
+    if (ctx) {
+        const salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: [450, 520, 480, 610, 750, 680, 720, 690, 650, 580, 620, 700],
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: 'Expense',
+                        data: [320, 380, 350, 420, 480, 450, 490, 470, 440, 400, 430, 460],
+                        backgroundColor: 'rgba(251, 146, 60, 0.8)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                family: 'Inter',
+                                size: 12
+                            }
                         }
                     },
-                    plugins: {
-                        legend: {
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            family: 'Inter',
+                            size: 13
+                        },
+                        bodyFont: {
+                            family: 'Inter',
+                            size: 12
+                        },
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 100,
+                            font: {
+                                family: 'Inter',
+                                size: 11
+                            },
+                            color: '#64748b'
+                        },
+                        grid: {
+                            color: '#e2e8f0',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                family: 'Inter',
+                                size: 11
+                            },
+                            color: '#64748b'
+                        },
+                        grid: {
                             display: false
                         }
                     }
                 }
-            });
+            }
         });
-    </script>
-
-
-</body>
-</html>
-
+    }
+    
+    // Time selector buttons
+    const timeButtons = document.querySelectorAll('.time-btn');
+    timeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            timeButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>
