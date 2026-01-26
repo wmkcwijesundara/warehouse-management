@@ -3,172 +3,178 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= request.getParameter("title") != null ? request.getParameter("title") : "Warehouse Management" %></title>
+  
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <!-- Google Fonts - Poppins and Inter -->
+  
+  <!-- Inter Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  
   <style>
     :root {
-      --sidebar-width: 260px;
-      --header-height: 70px;
-      --sidebar-bg: #ffffff;
-      --sidebar-active-bg: #f0fdf4;
-      --primary-color: #16a34a;
-      --primary-dark: #15803d;
-      --primary-light: #22c55e;
-      --text-primary: #1f2937;
+      --sidebar-width: 240px;
+      --header-height: 64px;
+      --primary-green: #10b981;
+      --primary-green-hover: #059669;
+      --text-primary: #111827;
       --text-secondary: #6b7280;
-      --border-color: #e5e7eb;
-      --bg-light: #f9fafb;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --info: #3b82f6;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --bg-secondary: #f9fafb;
     }
 
-     body {
-          font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          background-color: var(--bg-light);
-          color: var(--text-primary);
-          margin: 0;
-          padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Sidebar */
     #sidebar {
       position: fixed;
       top: 0;
       left: 0;
       width: var(--sidebar-width);
       height: 100vh;
-      background-color: var(--sidebar-bg);
+      background: var(--bg);
+      border-right: 1px solid var(--border);
       overflow-y: auto;
-      z-index: 1001;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-      border-right: 1px solid var(--border-color);
+      z-index: 1000;
     }
 
-    #sidebar .sidebar-header {
-      color: var(--text-primary);
-      padding: 24px 20px;
-      border-bottom: 1px solid var(--border-color);
-      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-      min-height: 80px;
+    .sidebar-header {
+      padding: 20px 16px;
+      border-bottom: 1px solid var(--border);
+      height: var(--header-height);
       display: flex;
       align-items: center;
-      justify-content: center;
     }
 
-    #sidebar .sidebar-header p {
-      color: white;
-      font-weight: 600;
-      font-size: 20px;
+    .sidebar-header p {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      letter-spacing: 0.5px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
     }
 
     #sidebar ul {
       list-style: none;
-      padding-left: 0;
+      padding: 8px;
       margin: 0;
+    }
+
+    #sidebar ul li {
+      margin: 2px 0;
     }
 
     #sidebar ul li a {
       display: flex;
       align-items: center;
-      color: var(--text-primary);
-      padding: 14px 20px;
+      padding: 10px 12px;
+      color: var(--text-secondary);
       text-decoration: none;
-      transition: all 0.2s ease;
-      font-weight: 500;
+      border-radius: 6px;
       font-size: 14px;
-      border-left: 3px solid transparent;
-      margin: 2px 0;
+      font-weight: 500;
+      transition: all 0.15s;
     }
 
     #sidebar ul li a i {
-      margin-right: 12px;
-      font-size: 18px;
       width: 20px;
+      margin-right: 10px;
+      font-size: 16px;
       text-align: center;
     }
 
     #sidebar ul li a:hover {
-      color: var(--primary-color);
-      background-color: var(--sidebar-active-bg);
-      border-left-color: var(--primary-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     #sidebar ul li.active > a {
-      color: var(--primary-color);
-      background-color: var(--sidebar-active-bg);
-      border-left-color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    #sidebar ul li .dropdown-toggle::after {
-      margin-left: auto;
+      background: var(--bg-secondary);
+      color: var(--primary-green);
     }
 
     #sidebar ul li .collapse {
-      background-color: #f8fafc;
+      background: transparent;
+      padding-left: 0;
     }
 
     #sidebar ul li .collapse li a {
-      padding-left: 50px;
+      padding-left: 40px;
       font-size: 13px;
     }
 
+    .logout-btn {
+      margin: 8px;
+      padding: 0 !important;
+    }
+
+    .logout-btn a {
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border) !important;
+    }
+
+    .logout-btn a:hover {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+    }
+
+    /* Header */
     #header {
       position: fixed;
       top: 0;
       left: var(--sidebar-width);
+      right: 0;
       height: var(--header-height);
-      width: calc(100% - var(--sidebar-width));
-      background: white;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 0 32px;
-      z-index: 1000;
-      color: var(--text-primary);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      border-bottom: 1px solid var(--border-color);
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 999;
     }
 
-    .header-left {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header-title {
-      font-size: 22px;
+    .header-left h1 {
+      margin: 0;
+      font-size: 18px;
       font-weight: 600;
       color: var(--text-primary);
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
       line-height: 1.2;
     }
 
     .header-date {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-secondary);
-      margin-top: 4px;
-      font-weight: 400;
+      margin-top: 2px;
     }
 
     .header-center {
       flex: 1;
-      max-width: 500px;
-      margin: 0 30px;
+      max-width: 400px;
+      margin: 0 24px;
     }
 
     .search-bar {
@@ -177,195 +183,143 @@
 
     .search-bar input {
       width: 100%;
-      padding: 10px 15px 10px 42px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       font-size: 14px;
-      background-color: var(--bg-light);
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
+      background: var(--bg-secondary);
+      transition: all 0.15s;
     }
 
     .search-bar input:focus {
       outline: none;
-      border-color: var(--primary-color);
-      background-color: white;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      border-color: var(--primary-green);
+      background: var(--bg);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     }
 
     .search-bar i {
       position: absolute;
-      left: 15px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-secondary);
-    }
-
-
-    #content {
-      position: absolute;
-      top: var(--header-height);
-      left: var(--sidebar-width);
-      width: calc(100% - var(--sidebar-width));
-      height: calc(100vh - var(--header-height));
-      overflow-y: auto;
-      padding: 32px;
-      scrollbar-width: thin; /* Firefox */
-      scrollbar-color: var(--border-color) transparent;
-    }
-    
-    #content::-webkit-scrollbar {
-      width: 6px;
-    }
-    
-    #content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    #content::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-      border-radius: 3px;
-    }
-    
-    #content::-webkit-scrollbar-thumb:hover {
-      background: var(--text-secondary);
-    }
-
-    .sidebar-header {
-      position: relative;
-      min-height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-shadow: 0 0 5px rgba(0,0,0,0.2);
+      font-size: 14px;
     }
 
     .header-right {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
     }
 
     .notification-icon {
       position: relative;
-      cursor: pointer;
       padding: 8px;
-      border-radius: 8px;
-      transition: background-color 0.3s;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s;
     }
 
     .notification-icon:hover {
-      background-color: var(--bg-light);
+      background: var(--bg-secondary);
     }
 
     .notification-badge {
       position: absolute;
-      top: 0;
-      right: 0;
-      background: var(--danger);
+      top: 4px;
+      right: 4px;
+      width: 18px;
+      height: 18px;
+      background: #ef4444;
       color: white;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
     }
 
     .user-profile {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      padding: 4px 8px;
+      border-radius: 6px;
       cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 10px;
-      transition: background-color 0.3s;
+      transition: background 0.15s;
     }
 
     .user-profile:hover {
-      background-color: var(--bg-light);
+      background: var(--bg-secondary);
     }
 
     .user-profile img {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--border);
     }
 
-    .user-profile .user-info {
+    .user-info {
       display: flex;
       flex-direction: column;
     }
 
-    .user-profile .user-name {
-      color: var(--text-primary);
-      font-weight: 600;
-      font-size: 14px;
-      margin: 0;
-    }
-
-    .user-profile .user-role {
-      color: var(--text-secondary);
-      font-size: 12px;
-      margin: 0;
-    }
-
-    .logout-btn {
-      margin: 20px;
-      padding: 0 !important;
-    }
-
-    .logout-btn a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #ef4444;
-      color: white !important;
-      padding: 12px 20px;
-      border-radius: 8px;
+    .user-name {
+      font-size: 13px;
       font-weight: 500;
-      transition: all 0.2s;
-      border-left: none !important;
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.2;
     }
 
-    .logout-btn a:hover {
-      background: #dc2626;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    .user-role {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.2;
     }
 
-    /* Scrollbar styling */
-    #sidebar::-webkit-scrollbar {
+    /* Content Area */
+    #content {
+      margin-left: var(--sidebar-width);
+      margin-top: var(--header-height);
+      padding: 24px;
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    /* Scrollbar */
+    #sidebar::-webkit-scrollbar,
+    #content::-webkit-scrollbar {
       width: 6px;
     }
 
-    #sidebar::-webkit-scrollbar-track {
+    #sidebar::-webkit-scrollbar-track,
+    #content::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    #sidebar::-webkit-scrollbar-thumb {
-      background: var(--border-color);
+    #sidebar::-webkit-scrollbar-thumb,
+    #content::-webkit-scrollbar-thumb {
+      background: var(--border);
       border-radius: 3px;
     }
 
-    #sidebar::-webkit-scrollbar-thumb:hover {
+    #sidebar::-webkit-scrollbar-thumb:hover,
+    #content::-webkit-scrollbar-thumb:hover {
       background: var(--text-secondary);
     }
   </style>
 </head>
 <body>
 
-
 <!-- Sidebar -->
 <div id="sidebar">
   <div class="sidebar-header">
-    <p class="mb-0">panze studio.</p>
+    <p>panze studio.</p>
   </div>
-
 
   <ul class="components">
     <li class="<%= "dashboard".equals(request.getParameter("activePage")) || "index".equals(request.getParameter("activePage")) ? "active" : "" %>">
@@ -385,7 +339,7 @@
     </li>
     <li>
       <a href="#moreSubmenu" data-bs-toggle="collapse" class="dropdown-toggle">
-        <i class="bi bi-gear me-2"></i> More
+        <i class="bi bi-gear"></i> More
       </a>
       <ul class="collapse list-unstyled" id="moreSubmenu">
         <li class="<%= "manageCategory".equals(request.getParameter("activePage")) ? "active" : "" %>">
@@ -407,7 +361,7 @@
           <a href="manageRacks"><i class="bi bi-hdd-stack"></i> Manage Rack</a>
         </li>
         <li class="<%= "manageUser".equals(request.getParameter("activePage")) ? "active" : "" %>">
-           <a href="manageUser.jsp"><i class="bi bi-people-fill"></i> Manage Users</a>
+          <a href="manageUser.jsp"><i class="bi bi-people-fill"></i> Manage Users</a>
         </li>
       </ul>
     </li>
@@ -423,48 +377,42 @@
 <!-- Header -->
 <nav id="header">
   <div class="header-left">
-    <h1 class="header-title">Dashboard Overview</h1>
+    <h1><%= request.getParameter("pageTitle") != null ? request.getParameter("pageTitle") : (request.getParameter("title") != null ? request.getParameter("title") : "Dashboard") %></h1>
     <div class="header-date"><%= new java.text.SimpleDateFormat("dd MMMM, yyyy").format(new java.util.Date()) %></div>
   </div>
   
   <div class="header-center">
     <div class="search-bar">
       <i class="bi bi-search"></i>
-      <input type="text" placeholder="Search sales operations">
+      <input type="text" placeholder="Search...">
     </div>
   </div>
   
   <div class="header-right">
     <div class="notification-icon">
-      <i class="bi bi-bell" style="font-size: 20px; color: var(--text-secondary);"></i>
+      <i class="bi bi-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
       <span class="notification-badge">5</span>
     </div>
     
     <div class="dropdown">
       <div class="user-profile" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://ui-avatars.com/api/?name=<%= session.getAttribute("user") != null ? ((com.warehouse.models.User)session.getAttribute("user")).getUsername() : "Admin" %>&background=6366f1&color=fff" alt="User">
+        <img src="https://ui-avatars.com/api/?name=<%= session.getAttribute("user") != null ? ((com.warehouse.models.User)session.getAttribute("user")).getUsername() : "Admin" %>&background=10b981&color=fff" alt="User">
         <div class="user-info">
           <p class="user-name"><%= session.getAttribute("user") != null ? ((com.warehouse.models.User)session.getAttribute("user")).getUsername() : "Admin" %></p>
           <p class="user-role"><%= session.getAttribute("role") != null ? ((String)session.getAttribute("role")).replace("_", " ").substring(0, 1).toUpperCase() + ((String)session.getAttribute("role")).replace("_", " ").substring(1) : "User" %></p>
         </div>
       </div>
       
-      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 280px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-        <li class="px-3 py-3 border-bottom">
-          <h6 class="mb-2" style="font-weight: 600; color: var(--text-primary);"><i class="bi bi-person-circle me-2"></i>User Information</h6>
-          <div class="d-flex align-items-center mb-2" style="font-size: 13px; color: var(--text-secondary);">
-            <i class="bi bi-person me-2"></i>
-            <span>Logged in as: <strong style="color: var(--text-primary);"><%= session.getAttribute("role") != null ? session.getAttribute("role") : "User" %></strong></span>
-          </div>
-          <div class="d-flex align-items-center mb-2" style="font-size: 13px; color: var(--text-secondary);">
-            <i class="bi bi-clock-history me-2"></i>
-            <span>Last Login: <strong style="color: var(--text-primary);"><%= session.getAttribute("lastLogin") != null ? session.getAttribute("lastLogin") : "N/A" %></strong></span>
+      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 240px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <li class="px-3 py-2 border-bottom">
+          <h6 class="mb-1" style="font-weight: 600; font-size: 13px; color: var(--text-primary);">User Information</h6>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            <div class="mb-1">Role: <strong style="color: var(--text-primary);"><%= session.getAttribute("role") != null ? session.getAttribute("role") : "User" %></strong></div>
           </div>
         </li>
         <li class="px-3 py-2">
-          <div class="d-flex justify-content-between gap-2">
-            <a href="settings.jsp" class="btn btn-outline-primary btn-sm flex-fill"><i class="bi bi-gear me-1"></i>Settings</a>
-            <a href="login.jsp" class="btn btn-danger btn-sm flex-fill"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+          <div class="d-flex gap-2">
+            <a href="login.jsp" class="btn btn-sm flex-fill" style="background: var(--primary-green); color: white; border: none;">Logout</a>
           </div>
         </li>
       </ul>
@@ -474,8 +422,6 @@
 
 <!-- Page Content -->
 <div id="content">
-  <!-- Dashboard content will be inserted here -->
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

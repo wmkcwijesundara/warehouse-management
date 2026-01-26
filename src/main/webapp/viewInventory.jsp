@@ -4,22 +4,12 @@
 
 <jsp:include page="template/layout.jsp">
     <jsp:param name="title" value="Inventory" />
+    <jsp:param name="pageTitle" value="Inventory List" />
     <jsp:param name="activePage" value="inventory" />
 </jsp:include>
 
-<style>
-    .page-header {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 24px;
-        font-family: 'Poppins', sans-serif;
-    }
-</style>
-
 <div>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-header mb-0">Inventory List</h2>
         <a href="Reorder" class="custom-add-btn text-decoration-none">Reorder</a>
     </div>
 

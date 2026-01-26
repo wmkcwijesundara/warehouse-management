@@ -5,41 +5,26 @@
 <%@ page import="com.warehouse.dao.CategoryDAO" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="manageStock" />
-    <jsp:param name="activePage" value="manageStock" />
-    <jsp:param name="content" value="manageStock" />
+    <jsp:param name="title" value="Stock In" />
+    <jsp:param name="pageTitle" value="New Stock Entry" />
+    <jsp:param name="activePage" value="supply" />
 </jsp:include>
 
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Stock In - Rice</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-        <link rel="stylesheet" href="css/style.css">
+<%
+    String successMessage = (String) session.getAttribute("successMessage");
+    if (successMessage != null) {
+%>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Stored successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<%
+        session.removeAttribute("successMessage");
+    }
+%>
 
-    </head>
-    <body>
-    <%
-        String successMessage = (String) session.getAttribute("successMessage");
-        if (successMessage != null) {
-    %>
-        <div class="d-flex justify-content-center mt-3">
-            <div class="alert alert-success alert-dismissible fade show text-center shadow-sm rounded px-4 py-2" role="alert" style="width: 320px;">
-                ✅ Stored successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </div>
-    <%
-            session.removeAttribute("successMessage");
-        }
-    %>
-
-
-
-    <div class="container">
-            <h2 class="category-heading">New Rice Stock Entry</h2>
+<div>
+    <h2 class="page-header mb-4">New Stock Entry</h2>
         <form action="StockIn" method="post">
         <c:choose>
             <c:when test="${not empty stockIn}">
@@ -338,10 +323,7 @@
                 </div>
 
 
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-        <script src="js/stock_in_script.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    </body>
-    </html>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/stock_in_script.js"></script>
+</div>

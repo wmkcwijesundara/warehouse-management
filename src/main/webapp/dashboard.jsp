@@ -5,7 +5,8 @@
 <%@ page import="com.warehouse.dao.InventoryDAO" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="Dashboard Overview" />
+    <jsp:param name="title" value="Dashboard" />
+    <jsp:param name="pageTitle" value="Dashboard Overview" />
     <jsp:param name="activePage" value="dashboard" />
 </jsp:include>
 
@@ -19,122 +20,77 @@
         ProductDAO productDAO = new ProductDAO();
         InventoryDAO inventoryDAO = new InventoryDAO();
         
-        // Get product count
         Statement stmt = conn.createStatement();
         ResultSet rs1 = stmt.executeQuery("SELECT COUNT(*) FROM products");
         if (rs1.next()) productCount = rs1.getInt(1);
         
-        // Get low stock count
         List lowStockProducts = productDAO.getLowStockProducts();
         lowStockCount = lowStockProducts.size();
         
-        // Get total stock
         ResultSet rs2 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM inventory");
         if (rs2.next()) totalStock = rs2.getInt(1);
         
-        // Get available stock (not expired)
         ResultSet rs3 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM inventory WHERE expiry_date > CURDATE() OR expiry_date IS NULL");
         if (rs3.next()) availableStock = rs3.getInt(1);
         
-        // Get total sales (mock data - adjust based on your schema)
         ResultSet rs4 = stmt.executeQuery("SELECT COALESCE(SUM(quantity), 0) FROM stock_out");
         if (rs4.next()) {
-            totalSales = rs4.getInt(1) * 10.5; // Mock calculation
+            totalSales = rs4.getInt(1) * 10.5;
             salesReturn = rs4.getInt(1);
         }
         
-        // Get purchases (stock in)
         ResultSet rs5 = stmt.executeQuery("SELECT COALESCE(COUNT(*), 0) FROM stock_in WHERE status = 'approved'");
         if (rs5.next()) purchases = rs5.getInt(1);
         
-        // Total purchases value
-        totalPurchases = purchases * 8.2; // Mock calculation
-        
+        totalPurchases = purchases * 8.2;
     } catch (Exception e) {
         e.printStackTrace();
     }
 %>
 
 <style>
-    * {
-        font-family: 'Inter', 'Poppins', sans-serif;
-    }
-    
-    .dashboard-container {
-        padding: 0;
-        max-width: 100%;
-    }
-    
     .stat-card {
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
         height: 100%;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        border-color: #16a34a;
     }
     
     .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 16px;
-        font-size: 22px;
+        margin-bottom: 12px;
+        font-size: 20px;
         color: white;
-    }
-    
-    .stat-icon.green {
-        background: #16a34a;
-    }
-    
-    .stat-icon.green-light {
-        background: #22c55e;
-    }
-    
-    .stat-icon.green-dark {
-        background: #15803d;
-    }
-    
-    .stat-icon.green-accent {
-        background: #10b981;
+        background: var(--primary-green);
     }
     
     .stat-label {
         font-size: 13px;
-        color: #6b7280;
+        color: var(--text-secondary);
         font-weight: 500;
         margin-bottom: 8px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.02em;
     }
     
     .stat-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: #1f2937;
-        font-family: 'Poppins', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
         line-height: 1.2;
     }
     
     .sales-overview-card {
-        background: white;
-        border-radius: 12px;
-        padding: 28px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e5e7eb;
-        margin-bottom: 24px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 24px;
     }
     
     .sales-overview-header {
@@ -142,238 +98,192 @@
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 24px;
-        flex-wrap: wrap;
-        gap: 16px;
     }
     
     .sales-overview-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
-        color: #1f2937;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
+        color: var(--text-primary);
+        margin: 0 0 8px 0;
     }
     
     .sales-total {
-        font-size: 32px;
-        font-weight: 700;
-        color: #1f2937;
-        font-family: 'Poppins', sans-serif;
-        margin: 12px 0 0 0;
-        line-height: 1.2;
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
     }
     
     .time-selector {
         display: flex;
         gap: 8px;
         margin-bottom: 24px;
-        flex-wrap: wrap;
-    }
-    
-    .time-btn {
-        padding: 8px 16px;
-        border: 1px solid #e5e7eb;
-        background: white;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 500;
-        color: #6b7280;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    .time-btn:hover {
-        background: #f9fafb;
-        border-color: #d1d5db;
-    }
-    
-    .time-btn.active {
-        background: #16a34a;
-        color: white;
-        border-color: #16a34a;
     }
     
     .chart-container {
         position: relative;
-        height: 300px;
-        margin-top: 24px;
+        height: 280px;
+        margin-top: 16px;
     }
     
     .section-title {
         font-size: 16px;
         font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 20px;
-        font-family: 'Poppins', sans-serif;
-    }
-    
-    .form-select {
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        padding: 8px 12px;
-        font-size: 13px;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    .form-select:focus {
-        border-color: #16a34a;
-        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        color: var(--text-primary);
+        margin-bottom: 16px;
     }
 </style>
 
-<div class="dashboard-container">
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green">
-                    <i class="bi bi-tag"></i>
-                </div>
-                <div class="stat-label">Total Sales</div>
-                <div class="stat-value">$<%= String.format("%.2f", totalSales) %></div>
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-tag"></i>
             </div>
+            <div class="stat-label">Total Sales</div>
+            <div class="stat-value">$<%= String.format("%.2f", totalSales) %></div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green-light">
-                    <i class="bi bi-truck"></i>
-                </div>
-                <div class="stat-label">Total Purchases</div>
-                <div class="stat-value">$<%= String.format("%.2f", totalPurchases) %></div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-truck"></i>
             </div>
+            <div class="stat-label">Total Purchases</div>
+            <div class="stat-value">$<%= String.format("%.2f", totalPurchases) %></div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green-accent">
-                    <i class="bi bi-arrow-return-left"></i>
-                </div>
-                <div class="stat-label">Sales Return</div>
-                <div class="stat-value"><%= salesReturn %></div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-arrow-return-left"></i>
             </div>
+            <div class="stat-label">Sales Return</div>
+            <div class="stat-value"><%= salesReturn %></div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green-dark">
-                    <i class="bi bi-cart"></i>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-cart"></i>
+            </div>
+            <div class="stat-label">Purchases</div>
+            <div class="stat-value"><%= purchases %></div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Overview Section -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="sales-overview-card">
+            <div class="sales-overview-header">
+                <div>
+                    <h3 class="sales-overview-title">Sales Overview</h3>
+                    <div class="sales-total">$<%= String.format("%.2f", totalSales) %></div>
                 </div>
-                <div class="stat-label">Purchases</div>
-                <div class="stat-value"><%= purchases %></div>
+                <div>
+                    <select class="form-select" style="width: auto; min-width: 160px;">
+                        <option>Last year (2023)</option>
+                        <option>This year (2024)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="time-selector">
+                <button class="tab-btn active">12 Months</button>
+                <button class="tab-btn">30 days</button>
+                <button class="tab-btn">7 days</button>
+                <button class="tab-btn">24 hours</button>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
             </div>
         </div>
     </div>
-
-    <!-- Sales Overview Section -->
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="sales-overview-card">
-                <div class="sales-overview-header">
-                    <div>
-                        <h3 class="sales-overview-title">Sales Overview</h3>
-                        <div class="sales-total">$<%= String.format("%.2f", totalSales) %></div>
-                    </div>
-                    <div>
-                        <select class="form-select" style="width: auto; min-width: 180px;">
-                            <option>Last year (2023)</option>
-                            <option>This year (2024)</option>
-                        </select>
+    
+    <div class="col-lg-4">
+        <div class="sales-overview-card">
+            <h4 class="section-title">Recent Activity</h4>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid var(--border) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text-primary); font-size: 14px;">Stock In</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Today, 10:30 AM</div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">+500</span>
                     </div>
                 </div>
-                
-                <div class="time-selector">
-                    <button class="time-btn active">12 Months</button>
-                    <button class="time-btn">30 days</button>
-                    <button class="time-btn">7 days</button>
-                    <button class="time-btn">24 hours</button>
+                <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid var(--border) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text-primary); font-size: 14px;">Stock Out</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Today, 09:15 AM</div>
+                        </div>
+                        <span class="badge bg-success rounded-pill">-250</span>
+                    </div>
                 </div>
-                
-                <div class="chart-container">
-                    <canvas id="salesChart"></canvas>
+                <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid var(--border) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text-primary); font-size: 14px;">New Order</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Yesterday, 4:20 PM</div>
+                        </div>
+                        <span class="badge bg-info rounded-pill">New</span>
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 mb-4">
-            <div class="sales-overview-card">
-                <h4 class="section-title">Recent Activity</h4>
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e5e7eb !important;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div style="font-weight: 500; color: #1f2937; font-size: 14px;">Stock In</div>
-                                <div style="font-size: 12px; color: #6b7280;">Today, 10:30 AM</div>
-                            </div>
-                            <span class="badge rounded-pill" style="background: #16a34a;">+500</span>
+                <div class="list-group-item border-0 px-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div style="font-weight: 500; color: var(--text-primary); font-size: 14px;">Product Added</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Yesterday, 2:10 PM</div>
                         </div>
-                    </div>
-                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e5e7eb !important;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div style="font-weight: 500; color: #1f2937; font-size: 14px;">Stock Out</div>
-                                <div style="font-size: 12px; color: #6b7280;">Today, 09:15 AM</div>
-                            </div>
-                            <span class="badge rounded-pill" style="background: #22c55e;">-250</span>
-                        </div>
-                    </div>
-                    <div class="list-group-item border-0 px-0 py-3" style="border-bottom: 1px solid #e5e7eb !important;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div style="font-weight: 500; color: #1f2937; font-size: 14px;">New Order</div>
-                                <div style="font-size: 12px; color: #6b7280;">Yesterday, 4:20 PM</div>
-                            </div>
-                            <span class="badge rounded-pill" style="background: #10b981;">New</span>
-                        </div>
-                    </div>
-                    <div class="list-group-item border-0 px-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div style="font-weight: 500; color: #1f2937; font-size: 14px;">Product Added</div>
-                                <div style="font-size: 12px; color: #6b7280;">Yesterday, 2:10 PM</div>
-                            </div>
-                            <span class="badge rounded-pill" style="background: #15803d;">+1</span>
-                        </div>
+                        <span class="badge bg-warning rounded-pill">+1</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Inventory Stats -->
-    <div class="row g-3">
-        <div class="col-md-4 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green">
-                    <i class="bi bi-box-seam"></i>
-                </div>
-                <div class="stat-label">Total Products</div>
-                <div class="stat-value"><%= productCount %></div>
-                <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                    <i class="bi bi-arrow-up text-success"></i> 5% from last month
-                </div>
+<!-- Inventory Stats -->
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-label">Total Products</div>
+            <div class="stat-value"><%= productCount %></div>
+            <div style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                <i class="bi bi-arrow-up text-success"></i> 5% from last month
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green-light">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="stat-label">Available Stock</div>
-                <div class="stat-value"><%= availableStock %> kg</div>
-                <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                    <%= totalStock > 0 ? String.format("%.1f", (availableStock * 100.0 / totalStock)) : 0 %>% of total
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-label">Available Stock</div>
+            <div class="stat-value"><%= availableStock %> kg</div>
+            <div style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                <%= totalStock > 0 ? String.format("%.1f", (availableStock * 100.0 / totalStock)) : 0 %>% of total
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon green-dark">
-                    <i class="bi bi-exclamation-triangle"></i>
-                </div>
-                <div class="stat-label">Low Stock Items</div>
-                <div class="stat-value"><%= lowStockCount %></div>
-                <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                    Needs replenishment
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-label">Low Stock Items</div>
+            <div class="stat-value"><%= lowStockCount %></div>
+            <div style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                Needs replenishment
             </div>
         </div>
     </div>
@@ -381,7 +291,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Sales Chart
     const ctx = document.getElementById('salesChart');
     if (ctx) {
         const salesChart = new Chart(ctx, {
@@ -392,16 +301,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         label: 'Income',
                         data: [450, 520, 480, 610, 750, 680, 720, 690, 650, 580, 620, 700],
-                        backgroundColor: '#16a34a',
-                        borderRadius: 8,
-                        borderSkipped: false,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
                     },
                     {
                         label: 'Expense',
                         data: [320, 380, 350, 420, 480, 450, 490, 470, 440, 400, 430, 460],
-                        backgroundColor: '#22c55e',
-                        borderRadius: 8,
-                        borderSkipped: false,
+                        backgroundColor: '#6b7280',
+                        borderRadius: 4,
                     }
                 ]
             },
@@ -414,25 +321,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         position: 'top',
                         labels: {
                             usePointStyle: true,
-                            padding: 15,
-                            font: {
-                                family: 'Inter',
-                                size: 12
-                            }
+                            padding: 12,
+                            font: { size: 12 }
                         }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        titleFont: {
-                            family: 'Inter',
-                            size: 13
-                        },
-                        bodyFont: {
-                            family: 'Inter',
-                            size: 12
-                        },
-                        cornerRadius: 8
+                        padding: 8,
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 4
                     }
                 },
                 scales: {
@@ -440,10 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         ticks: {
                             stepSize: 100,
-                            font: {
-                                family: 'Inter',
-                                size: 11
-                            },
+                            font: { size: 11 },
                             color: '#6b7280'
                         },
                         grid: {
@@ -453,10 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     x: {
                         ticks: {
-                            font: {
-                                family: 'Inter',
-                                size: 11
-                            },
+                            font: { size: 11 },
                             color: '#6b7280'
                         },
                         grid: {
@@ -468,7 +360,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Time selector buttons
     const timeButtons = document.querySelectorAll('.time-btn');
     timeButtons.forEach(btn => {
         btn.addEventListener('click', function() {

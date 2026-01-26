@@ -4,30 +4,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="asn_management" />
-    <jsp:param name="activePage" value="asn_management" />
-    <jsp:param name="content" value="asn_management" />
+    <jsp:param name="title" value="ASN Details" />
+    <jsp:param name="pageTitle" value="ASN Details" />
+    <jsp:param name="activePage" value="asn" />
 </jsp:include>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>ASN Details</title>
-    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .status-pending {
-            color: #f6c23e;
-            font-weight: 500;
-        }
-        .status-approved {
-            color: #1cc88a;
-            font-weight: 500;
+<style>
+    .status-pending {
+        color: var(--warning);
+        font-weight: 500;
+    }
+    .status-approved {
+        color: var(--primary-green);
+        font-weight: 500;
         }
         .status-rejected {
             color: #e74a3b;

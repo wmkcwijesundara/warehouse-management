@@ -2,26 +2,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="template/layout.jsp">
     <jsp:param name="title" value="Order Management" />
+    <jsp:param name="pageTitle" value="Order Management" />
     <jsp:param name="activePage" value="orders" />
 </jsp:include>
 
 <style>
-    .page-header {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 24px;
-        font-family: 'Poppins', sans-serif;
-    }
-    .badge-pending { background-color: #f59e0b; color: #fff; }
-    .badge-approved { background-color: #16a34a; color: #fff; }
-    .badge-dispatched { background-color: #22c55e; color: #fff; }
-    .badge-rejected { background-color: #ef4444; color: #fff; }
+    .badge-pending { background-color: var(--warning) !important; color: #fff; }
+    .badge-approved { background-color: var(--primary-green) !important; color: #fff; }
+    .badge-dispatched { background-color: var(--success) !important; color: #fff; }
+    .badge-rejected { background-color: var(--danger) !important; color: #fff; }
 </style>
 
 <div>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-header mb-0">Order Management</h2>
         <a class="custom-add-btn text-decoration-none" href="StockOut?action=new">Add New Order</a>
     </div>
 
