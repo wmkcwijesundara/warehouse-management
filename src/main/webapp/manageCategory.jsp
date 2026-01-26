@@ -5,28 +5,55 @@
 <%@ page import="com.warehouse.dao.CategoryDAO" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="manageCategory" />
+    <jsp:param name="title" value="Manage Categories" />
     <jsp:param name="activePage" value="manageCategory" />
-    <jsp:param name="content" value="manageCategory" />
 </jsp:include>
 
-<html>
-<head>
-    <title>Manage Categories</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
+<style>
+    .page-header {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 24px;
+        font-family: 'Poppins', sans-serif;
+    }
+    .form-control {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-family: 'Inter', sans-serif;
+    }
+    .form-control:focus {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+    .btn-warning {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+    }
+    .btn-danger {
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+</style>
 
-<body>
-    <div class="container">
-        <h2 class="category-heading">Category Management</h2>
+<div>
+    <h2 class="page-header">Category Management</h2>
 
-        <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div></div>
+        <div class="d-flex gap-2">
             <input type="text" id="searchInput" class="form-control" style="width: 250px;" placeholder="Search by category name...">
+            <button class="custom-add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add Category</button>
         </div>
-
-        <button class="btn btn-primary mb-3 custom-add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add Category</button>
+    </div>
 
         <div class="table-container">
             <table class="table table-bordered">
@@ -85,5 +112,4 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/manage_category_script.js"></script>
-</body>
-</html>
+</div>

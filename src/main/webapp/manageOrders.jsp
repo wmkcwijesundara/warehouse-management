@@ -1,43 +1,41 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="manageOrders" />
-    <jsp:param name="activePage" value="manageOrders" />
-    <jsp:param name="content" value="manageOrders" />
+    <jsp:param name="title" value="Order Management" />
+    <jsp:param name="activePage" value="orders" />
 </jsp:include>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Stock Out Requests</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .badge-pending { background-color: #ffc107; color: #000; }
-        .badge-approved { background-color: #007bff; color: #fff; }
-        .badge-dispatched { background-color: #28a745; color: #fff; }
-        .badge-rejected { background-color: #dc3545; color: #fff; }
-    </style>
-</head>
-<body>
-    <div class="container">
-            <h2 class="category-heading">Order Management</h2>
 
-            <!-- Add Order Button -->
-            <div class="d-flex justify-content-end mb-3">
-                <a class="btn btn-primary mb-3 mr-2 custom-add-btn" href="StockOut?action=new">Add New Order</a>
-            </div>
+<style>
+    .page-header {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 24px;
+        font-family: 'Poppins', sans-serif;
+    }
+    .badge-pending { background-color: #f59e0b; color: #fff; }
+    .badge-approved { background-color: #16a34a; color: #fff; }
+    .badge-dispatched { background-color: #22c55e; color: #fff; }
+    .badge-rejected { background-color: #ef4444; color: #fff; }
+</style>
 
-            <!-- Tab Buttons -->
-            <div class="mb-4 text-center">
-                <button class="tab-btn me-2" data-tab="pending" onclick="showTab('pending')">Pending</button>
-                <button class="tab-btn me-2" data-tab="picking" onclick="showTab('picking')">Picking</button>
-                <button class="tab-btn me-2" data-tab="packing" onclick="showTab('packing')">Packing</button>
-                <button class="tab-btn" data-tab="delivered" onclick="showTab('delivered')">Delivered</button>
-            </div>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-header mb-0">Order Management</h2>
+        <a class="custom-add-btn text-decoration-none" href="StockOut?action=new">Add New Order</a>
+    </div>
 
-        <table class="table table-bordered table-hover">
-            <thead class="thead-light">
+    <!-- Tab Buttons -->
+    <div class="mb-4 text-center">
+        <button class="tab-btn me-2" data-tab="pending" onclick="showTab('pending')">Pending</button>
+        <button class="tab-btn me-2" data-tab="picking" onclick="showTab('picking')">Picking</button>
+        <button class="tab-btn me-2" data-tab="packing" onclick="showTab('packing')">Packing</button>
+        <button class="tab-btn" data-tab="delivered" onclick="showTab('delivered')">Delivered</button>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Customer</th>
@@ -70,5 +68,4 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>

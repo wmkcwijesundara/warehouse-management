@@ -5,25 +5,54 @@
 <%@ page import="com.warehouse.dao.CategoryDAO" %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="manageSupplier" />
+    <jsp:param name="title" value="Manage Suppliers" />
     <jsp:param name="activePage" value="manageSupplier" />
-    <jsp:param name="content" value="manageSupplier" />
 </jsp:include>
 
-<html>
-<head>
-    <title>Manage Suppliers</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="container mt-4">
-    <h2 class="supplier-heading">Supplier Management</h2>
-    <div class="d-flex justify-content-end mb-3">
-         <input type="text" id="searchInput" class="form-control" style="width: 250px;" placeholder="Search by supplier name...">
-    </div>
+<style>
+    .page-header {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 24px;
+        font-family: 'Poppins', sans-serif;
+    }
+    .form-control {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-family: 'Inter', sans-serif;
+    }
+    .form-control:focus {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+    .btn-warning {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+    }
+    .btn-danger {
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+</style>
 
-    <button class="custom-add-btn mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Supplier</button>
+<div>
+    <h2 class="page-header">Supplier Management</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div></div>
+        <div class="d-flex gap-2">
+            <input type="text" id="searchInput" class="form-control" style="width: 250px;" placeholder="Search by supplier name...">
+            <button class="custom-add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add Supplier</button>
+        </div>
+    </div>
 
     <div class="table-container">
         <table class="table">
@@ -95,5 +124,4 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/manage_supplier_script.js"></script>
-</body>
-</html>
+</div>

@@ -4,22 +4,24 @@
 
 <jsp:include page="template/layout.jsp">
     <jsp:param name="title" value="Inventory" />
-    <jsp:param name="activePage" value="viewInventory" />
-    <jsp:param name="content" value="viewInventory" />
+    <jsp:param name="activePage" value="inventory" />
 </jsp:include>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Inventory List</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-<div class="container">
-        <h2 class="category-heading">Inventory List</h2>
-        <a href="Reorder" class="btn btn-primary mb-3 custom-add-btn">Reorder</a>
+<style>
+    .page-header {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 24px;
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
+
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-header mb-0">Inventory List</h2>
+        <a href="Reorder" class="custom-add-btn text-decoration-none">Reorder</a>
+    </div>
 
     <c:if test="${not empty param.success}">
         <div class="alert alert-success">${param.success}</div>
@@ -27,8 +29,9 @@
     <c:if test="${not empty successMessage}">
         <div class="alert alert-success">${successMessage}</div>
     </c:if>
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
         <tr>
             <th>#</th>
             <th>Product</th>
@@ -55,7 +58,9 @@
         </c:forEach>
         </tbody>
     </table>
-    <div class="row">
+    </div>
+    
+    <div class="row mt-4">
         <!-- Column 1: Stock Level Summary -->
         <div class="col-md-6">
             <h4 class="mt-5">Stock Level Summary</h4>
@@ -120,7 +125,4 @@
             </c:if>
         </div>
     </div>
-
 </div>
-</body>
-</html>
