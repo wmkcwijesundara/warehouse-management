@@ -4,57 +4,77 @@
 <%@ page import="com.warehouse.dao.CustomerDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<html>
-<head>
-    <title>Manage Customers</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-</head>
-<body class="container mt-4">
-    <h2>Customer Management</h2>
+<jsp:include page="template/layout.jsp">
+    <jsp:param name="title" value="Manage Customers" />
+    <jsp:param name="pageTitle" value="Customer Management" />
+    <jsp:param name="activePage" value="manageCustomer" />
+</jsp:include>
 
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Customer</button>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-header mb-0">Customer Management</h2>
+        <button class="custom-add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add Customer</button>
+    </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Contact Number</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="customerTable">
-            <c:forEach var="c" items="${customers}">
-                <tr data-id="${c.customerId}">
-                    <td>${c.customerId}</td>
-                    <td class="name">${c.name}</td>
-                    <td class="contact">${c.contactNumber}</td>
-                    <td class="email">${c.email}</td>
-                    <td class="address">${c.address}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning editBtn">Edit</button>
-                        <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
-                    </td>
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Contact Number</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Actions</th>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="customerTable">
+                <c:forEach var="c" items="${customers}">
+                    <tr data-id="${c.customerId}">
+                        <td>${c.customerId}</td>
+                        <td class="name">${c.name}</td>
+                        <td class="contact">${c.contactNumber}</td>
+                        <td class="email">${c.email}</td>
+                        <td class="address">${c.address}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning editBtn">Edit</button>
+                            <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
 
     <!-- Add Modal -->
     <div class="modal fade" id="addModal" tabindex="-1">
         <div class="modal-dialog">
             <form id="addForm" class="modal-content">
-                <div class="modal-header"><h5>Add Customer</h5></div>
+                <div class="modal-header">
+                    <h5>Add Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
-                    <input type="text" name="name" class="form-control mb-2" placeholder="Customer Name" required/>
-                    <input type="text" name="contactNumber" class="form-control mb-2" placeholder="Contact Number" required/>
-                    <input type="email" name="email" class="form-control mb-2" placeholder="Email" required/>
-                    <textarea name="address" class="form-control mb-2" placeholder="Address" required></textarea>
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Customer Name" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact Number</label>
+                        <input type="text" name="contactNumber" class="form-control" placeholder="Contact Number" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="Email" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -65,14 +85,30 @@
         <div class="modal-dialog">
             <form id="editForm" class="modal-content">
                 <input type="hidden" name="id"/>
-                <div class="modal-header"><h5>Edit Customer</h5></div>
+                <div class="modal-header">
+                    <h5>Edit Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
-                    <input type="text" name="name" class="form-control mb-2" required/>
-                    <input type="text" name="contactNumber" class="form-control mb-2" required/>
-                    <input type="email" name="email" class="form-control mb-2" required/>
-                    <textarea name="address" class="form-control mb-2" required></textarea>
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name</label>
+                        <input type="text" name="name" class="form-control" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact Number</label>
+                        <input type="text" name="contactNumber" class="form-control" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" required></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
@@ -131,5 +167,4 @@
             }
         });
     </script>
-</body>
-</html>
+</div>

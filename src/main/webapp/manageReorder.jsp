@@ -9,22 +9,13 @@
 %>
 
 <jsp:include page="template/layout.jsp">
-    <jsp:param name="title" value="manageReorder" />
+    <jsp:param name="title" value="Manage Reorders" />
+    <jsp:param name="pageTitle" value="Reorder Management" />
     <jsp:param name="activePage" value="manageReorder" />
-    <jsp:param name="content" value="manageReorder" />
 </jsp:include>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manage Reorders</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-<div class="container">
-    <h2 class="category-heading">Reorder Management</h2>
+<div>
+    <h2 class="page-header mb-4">Reorder Management</h2>
 
     <div class="table-container">
         <table class="table table-bordered">
@@ -41,18 +32,22 @@
             <tbody>
                 <% for (ReorderItem item : reorderList) {
                     String productName = productDAO.getProductById(item.getProductId()).getProductName();
+                    String statusClass = "badge bg-primary";
+                    if ("pending".equals(item.getStatus())) statusClass = "badge bg-warning";
+                    else if ("approved".equals(item.getStatus())) statusClass = "badge bg-primary";
+                    else if ("delivered".equals(item.getStatus())) statusClass = "badge bg-success";
                 %>
                 <tr data-id="<%= item.getReorderId() %>">
                     <td><%= item.getReorderId() %></td>
                     <td><%= productName %></td>
                     <td><%= item.getQuantity() %></td>
                     <td><%= item.getReorderDate() %></td>
-                    <td class="status"><%= item.getStatus() %></td>
+                    <td><span class="<%= statusClass %>"><%= item.getStatus() %></span></td>
                     <td>
                         <button class="btn btn-sm btn-warning updateBtn"
                                 data-id="<%= item.getReorderId() %>"
                                 data-status="<%= item.getStatus() %>">
-                            <i class="bi bi-pencil-square"></i> Update
+                            Update
                         </button>
                     </td>
                 </tr>
@@ -67,17 +62,21 @@
             <form method="post" action="Reorder" class="modal-content">
                 <input type="hidden" name="reorderId" id="reorderId">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Reorder Status</h5>
+                    <h5>Update Reorder Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-select" required>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="delivered">Delivered</option>
-                    </select>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select" required>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
@@ -98,5 +97,3 @@
         });
     });
 </script>
-</body>
-</html>
