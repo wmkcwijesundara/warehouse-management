@@ -67,5 +67,5 @@
             <a href="StockOut?action=view&id=${stockOut.id}" class="btn btn-secondary">Back to Request</a>
         </div>
     </div>
-</body>
-</html>
+
+<jsp:include page="template/footer.jsp" />

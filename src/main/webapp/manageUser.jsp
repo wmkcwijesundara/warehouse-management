@@ -110,3 +110,5 @@
         document.getElementById('submitBtn').textContent = 'Create User';
     }
 </script>
+
+<jsp:include page="template/footer.jsp" />

@@ -369,3 +369,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<jsp:include page="template/footer.jsp" />

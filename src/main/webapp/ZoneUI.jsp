@@ -450,9 +450,9 @@
     });
 
     // Add animation to modals when they appear
-    $('.modal').on('show.bs.modal', function() {
-        $(this).find('.modal-content').addClass('animate__animated animate__fadeInUp');
-    });
+        $('.modal').on('show.bs.modal', function() {
+            $(this).find('.modal-content').addClass('animate__animated animate__fadeInUp');
+        });
 </script>
-</body>
-</html>
+
+<jsp:include page="template/footer.jsp" />

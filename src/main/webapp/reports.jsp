@@ -143,3 +143,5 @@
         </div>
     </c:if>
 </div>
+
+<jsp:include page="template/footer.jsp" />

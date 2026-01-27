@@ -678,5 +678,5 @@ function sendToStock(asnId) {
 
 
     </script>
-</body>
-</html>
+
+<jsp:include page="template/footer.jsp" />
